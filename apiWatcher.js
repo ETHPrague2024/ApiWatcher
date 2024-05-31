@@ -56,6 +56,8 @@ const checkPWNAPI = async () => {
             const collateralChainId = result.chain_id;
             const desiredAssetChainId = result.desired_asset.contract.chain_id;
 
+            if (collateralChainId !== desiredAssetChainId) continue;
+
             const collateralNetwork = ethers.providers.getNetwork(collateralChainId);
             const desiredAssetNetwork = ethers.providers.getNetwork(desiredAssetChainId);
 
