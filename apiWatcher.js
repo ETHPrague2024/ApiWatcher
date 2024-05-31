@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { ethers } = require('ethers');
+require('dotenv').config();
 
 const API_URL =
   'https://api.pwn.xyz/api/v1/loan/?collateral_type=&include_testnets=false&is_verified=true&limit=10&ltv_ranges=0%2C80%2C0%2C20%2C60%2C80&offset=0&order_by=-appraisal&shit_filter_on=true&status__in=1';
@@ -42,6 +43,36 @@ const getContractStandard = async (address, provider) => {
     console.error(`Error checking contract at ${address}:`, error);
     return 'Unknown';
   }
+};
+
+const advertiseNewLoan = async (loan) => {
+  const provider = new ethers.providers.InfuraProvider(
+    'sepolia'
+  );
+  
+  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+  const contract = new ethers.Contract(
+    process.env.CONTRACT_ADDRESS,
+    [
+      'function advertiseNewLoan(address tokenCollateralAddress,uint256 tokenCollateralAmount,uint256 tokenCollateralIndex,address tokenLoanAddress,uint256 tokenLoanAmount,uint256 tokenLoanIndex,uint256 durationOfLoanSeconds,uint256 chainId,uint256 loanId) public',
+    ],
+    wallet
+  );
+
+  const tx = await contract.advertiseNewLoan(
+    loan.tokenCollateralAddress,
+    loan.tokenCollateralAmount,
+    loan.tokenCollateralIndex,
+    loan.tokenLoanAddress,
+    loan.tokenLoanAmount,
+    loan.tokenLoanIndex,
+    loan.durationOfLoanSeconds,
+    loan.chainId,
+    loan.loanId
+  );
+
+  console.log(`Transaction hash: ${tx.hash}`);
+  await tx.wait();
 };
 
 const checkPWNAPI = async () => {
@@ -103,6 +134,7 @@ const checkPWNAPI = async () => {
         console.log(
           `Loan ID: ${result.id} has unsupported contract standards. Collateral: ${collateralStandard}, Desired Asset: ${desiredAssetStandard}`
         );
+        processedLoanIds.add(result.id);
       }
     }
 
@@ -116,7 +148,7 @@ const checkPWNAPI = async () => {
     console.log('Change detected!');
     console.log('New Count of Eligible Loans', newLoanIds.length);
 
-    newLoanIds.forEach((id) => {
+    newLoanIds.forEach(async (id) => {
       const result = validResults.find((res) => res.id === id);
       const newLoanAdvertisedObject = {
         tokenCollateralAddress: result.collateral.contract.address,
@@ -135,8 +167,8 @@ const checkPWNAPI = async () => {
       };
       console.log('New Loan Advertised:', newLoanAdvertisedObject);
 
-      // call contract function to advertise new loan
-
+      // Call the contract function to advertise the new loan
+      await advertiseNewLoan(newLoanAdvertisedObject);
 
       processedLoanIds.add(id);
     });
