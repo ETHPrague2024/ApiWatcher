@@ -31,4 +31,4 @@ const checkPWNAPI = async () => {
 };
 
 checkPWNAPI();
-setInterval(checkAPI, CHECK_INTERVAL);
+setInterval(checkPWNAPI, CHECK_INTERVAL);
