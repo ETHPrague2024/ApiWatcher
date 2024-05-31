@@ -3,7 +3,7 @@ const { ethers } = require('ethers');
 require('dotenv').config();
 
 const API_URL =
-  'https://api.pwn.xyz/api/v1/loan/?collateral_type=&include_testnets=false&is_verified=true&limit=10&ltv_ranges=0%2C80%2C0%2C20%2C60%2C80&offset=0&order_by=-appraisal&shit_filter_on=true&status__in=1';
+  'https://api.pwn.xyz/api/v1/loan/?collateral_type=&include_testnets=false&limit=10&network__in=11155111&offset=0&order_by=-id&shit_filter_on=false&status__in=1';
 const CHECK_INTERVAL = 60000; // 60 seconds
 
 let processedLoanIds = new Set();
@@ -150,6 +150,7 @@ const checkPWNAPI = async () => {
 
     newLoanIds.forEach(async (id) => {
       const result = validResults.find((res) => res.id === id);
+
       const newLoanAdvertisedObject = {
         tokenCollateralAddress: result.collateral.contract.address,
         tokenCollateralAmount: result.collateral_amount,
@@ -161,13 +162,13 @@ const checkPWNAPI = async () => {
         tokenLoanIndex:
           result.desired_asset.token_id ||
           '115792089237316195423570985008687907853269984665640564039457584007913129639935',
+        tokenLoanRepaymentAmount: result.desired_to_be_paid,
         durationOfLoanSeconds: result.desired_duration,
         chainId: result.chain_id,
         loanId: result.id,
       };
       console.log('New Loan Advertised:', newLoanAdvertisedObject);
 
-      // Call the contract function to advertise the new loan
       await advertiseNewLoan(newLoanAdvertisedObject);
 
       processedLoanIds.add(id);
