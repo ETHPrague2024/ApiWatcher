@@ -46,15 +46,545 @@ const getContractStandard = async (address, provider) => {
 };
 
 const advertiseNewLoan = async (loan) => {
-  const provider = new ethers.providers.InfuraProvider(
-    'sepolia'
-  );
-  
+  const provider = new ethers.providers.InfuraProvider('sepolia');
+
   const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
   const contract = new ethers.Contract(
-    process.env.CONTRACT_ADDRESS,
+    '0x981Ff5aC5402b7fA1099Cd6bad653B40D8c949C9', // SEPOLIA, THIS ONE IS TEST
     [
-      'function advertiseNewLoan(address tokenCollateralAddress,uint256 tokenCollateralAmount,uint256 tokenCollateralIndex,address tokenLoanAddress,uint256 tokenLoanAmount,uint256 tokenLoanIndex,uint256 durationOfLoanSeconds,uint256 chainId,uint256 loanId) public',
+      {
+        inputs: [],
+        stateMutability: 'nonpayable',
+        type: 'constructor',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'loanID',
+            type: 'uint256',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'chainId',
+            type: 'uint256',
+          },
+          {
+            indexed: false,
+            internalType: 'address',
+            name: 'tokenCollateralAddress',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'tokenCollateralAmount',
+            type: 'uint256',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'tokenCollateralIndex',
+            type: 'uint256',
+          },
+          {
+            indexed: false,
+            internalType: 'address',
+            name: 'tokenLoanAddress',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'tokenLoanAmount',
+            type: 'uint256',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'tokenLoanIndex',
+            type: 'uint256',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'tokenLoanRepaymentAmount',
+            type: 'uint256',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'durationOfLoanSeconds',
+            type: 'uint256',
+          },
+        ],
+        name: 'NewLoanAdvertised',
+        type: 'event',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'loanId',
+            type: 'uint256',
+          },
+        ],
+        name: 'LoanFilled',
+        type: 'event',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'loanId',
+            type: 'uint256',
+          },
+        ],
+        name: 'LoanOfferRevoked',
+        type: 'event',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'loanId',
+            type: 'uint256',
+          },
+        ],
+        name: 'LoanClaimed',
+        type: 'event',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'chainId',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint256',
+            name: 'loanId',
+            type: 'uint256',
+          },
+        ],
+        name: 'getLoan',
+        outputs: [
+          {
+            components: [
+              {
+                internalType: 'address',
+                name: 'tokenCollateralAddress',
+                type: 'address',
+              },
+              {
+                internalType: 'uint256',
+                name: 'tokenCollateralAmount',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'tokenCollateralIndex',
+                type: 'uint256',
+              },
+              {
+                internalType: 'enum IPWNSimpleLoanSimpleOffer.Category',
+                name: 'tokenCollateralCategory',
+                type: 'uint8',
+              },
+              {
+                internalType: 'uint256',
+                name: 'tokenCollateralId',
+                type: 'uint256',
+              },
+              {
+                internalType: 'address',
+                name: 'tokenLoanAddress',
+                type: 'address',
+              },
+              {
+                internalType: 'uint256',
+                name: 'tokenLoanAmount',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'tokenLoanIndex',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'tokenLoanRepaymentAmount',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'loanYield',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint32',
+                name: 'durationOfLoanSeconds',
+                type: 'uint32',
+              },
+              {
+                internalType: 'uint40',
+                name: 'expiration',
+                type: 'uint40',
+              },
+              {
+                internalType: 'address',
+                name: 'borrower',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'advertiser',
+                type: 'address',
+              },
+              {
+                internalType: 'address',
+                name: 'filler',
+                type: 'address',
+              },
+              {
+                internalType: 'bytes',
+                name: 'signature',
+                type: 'bytes',
+              },
+              {
+                internalType: 'uint256',
+                name: 'nonce',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'chainId',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'loanId',
+                type: 'uint256',
+              },
+              {
+                internalType: 'enum PWNLoan.LoanState',
+                name: 'state',
+                type: 'uint8',
+              },
+            ],
+            internalType: 'struct PWNLoan.Loan',
+            name: '',
+            type: 'tuple',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'tokenCollateralAddress',
+            type: 'address',
+          },
+          {
+            internalType: 'uint256',
+            name: 'tokenCollateralAmount',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint256',
+            name: 'tokenCollateralIndex',
+            type: 'uint256',
+          },
+          {
+            internalType: 'address',
+            name: 'tokenLoanAddress',
+            type: 'address',
+          },
+          {
+            internalType: 'uint256',
+            name: 'tokenLoanAmount',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint256',
+            name: 'tokenLoanIndex',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint256',
+            name: 'tokenLoanRepaymentAmount',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint256',
+            name: 'durationOfLoanSeconds',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint256',
+            name: 'chainId',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint256',
+            name: 'loanId',
+            type: 'uint256',
+          },
+          {
+            internalType: 'enum IPWNSimpleLoanSimpleOffer.Category',
+            name: 'tokenCollateralCategory',
+            type: 'uint8',
+          },
+          {
+            internalType: 'uint256',
+            name: 'tokenCollateralId',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint256',
+            name: 'loanYield',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint256',
+            name: 'expiration',
+            type: 'uint256',
+          },
+          {
+            internalType: 'address',
+            name: 'borrower',
+            type: 'address',
+          },
+          {
+            internalType: 'uint256',
+            name: 'nonce',
+            type: 'uint256',
+          },
+          {
+            internalType: 'bytes',
+            name: 'signature',
+            type: 'bytes',
+          },
+        ],
+        name: 'advertiseNewLoan',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'chainId',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint256',
+            name: 'loanId',
+            type: 'uint256',
+          },
+        ],
+        name: 'revokeLoanOffer',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'chainId',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint256',
+            name: 'loanId',
+            type: 'uint256',
+          },
+        ],
+        name: 'fulfillLoan',
+        outputs: [],
+        stateMutability: 'payable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'chainId',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint256',
+            name: 'loanId',
+            type: 'uint256',
+          },
+        ],
+        name: 'claimLoan',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'tokenCollateralAddress',
+            type: 'address',
+          },
+          {
+            internalType: 'uint256',
+            name: 'tokenCollateralIndex',
+            type: 'uint256',
+          },
+          {
+            internalType: 'address',
+            name: 'tokenLoanAddress',
+            type: 'address',
+          },
+          {
+            internalType: 'uint256',
+            name: 'tokenLoanIndex',
+            type: 'uint256',
+          },
+          {
+            internalType: 'bool',
+            name: 'isCollateralNFT',
+            type: 'bool',
+          },
+          {
+            internalType: 'bool',
+            name: 'isLoanNFT',
+            type: 'bool',
+          },
+        ],
+        name: 'checkBalances',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint256',
+            name: '',
+            type: 'uint256',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'tokenCollateralAddress',
+            type: 'address',
+          },
+          {
+            internalType: 'uint256',
+            name: 'tokenCollateralIndex',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint256',
+            name: 'tokenCollateralAmount',
+            type: 'uint256',
+          },
+          {
+            internalType: 'bool',
+            name: 'isCollateralNFT',
+            type: 'bool',
+          },
+          {
+            internalType: 'address',
+            name: 'to',
+            type: 'address',
+          },
+        ],
+        name: 'transferCollateral',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'tokenLoanAddress',
+            type: 'address',
+          },
+          {
+            internalType: 'uint256',
+            name: 'tokenLoanIndex',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint256',
+            name: 'tokenLoanRepaymentAmount',
+            type: 'uint256',
+          },
+          {
+            internalType: 'bool',
+            name: 'isLoanNFT',
+            type: 'bool',
+          },
+          {
+            internalType: 'address',
+            name: 'to',
+            type: 'address',
+          },
+        ],
+        name: 'transferLoan',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'operator',
+            type: 'address',
+          },
+          {
+            internalType: 'address',
+            name: 'from',
+            type: 'address',
+          },
+          {
+            internalType: 'uint256',
+            name: 'tokenId',
+            type: 'uint256',
+          },
+          {
+            internalType: 'bytes',
+            name: 'data',
+            type: 'bytes',
+          },
+        ],
+        name: 'onERC721Received',
+        outputs: [
+          {
+            internalType: 'bytes4',
+            name: '',
+            type: 'bytes4',
+          },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
     ],
     wallet
   );
@@ -66,9 +596,17 @@ const advertiseNewLoan = async (loan) => {
     loan.tokenLoanAddress,
     loan.tokenLoanAmount,
     loan.tokenLoanIndex,
+    loan.tokenLoanRepaymentAmount,
     loan.durationOfLoanSeconds,
     loan.chainId,
-    loan.loanId
+    loan.loanId,
+    loan.tokenCollateralCategory,
+    loan.tokenCollateralId,
+    loan.loanYield,
+    loan.expiration,
+    loan.borrower,
+    loan.nonce,
+    loan.signature
   );
 
   console.log(`Transaction hash: ${tx.hash}`);
@@ -80,12 +618,10 @@ const checkPWNAPI = async () => {
     const response = await axios.get(API_URL);
     const currentResponseObject = response.data;
 
-    // Filter out results where loan_request_is_instant_funding is not true
     const filteredResults = currentResponseObject.results.filter(
       (item) => item.loan_request_is_instant_funding === true
     );
 
-    // Filter out already processed loan IDs
     const newResults = filteredResults.filter(
       (item) => !processedLoanIds.has(item.id)
     );
@@ -121,7 +657,6 @@ const checkPWNAPI = async () => {
         desiredAssetProvider
       );
 
-      // Filter results: Only include if both are ERC721 or ERC20
       if (
         (collateralStandard === 'ERC721' || collateralStandard === 'ERC20') &&
         (desiredAssetStandard === 'ERC721' || desiredAssetStandard === 'ERC20')
@@ -138,22 +673,25 @@ const checkPWNAPI = async () => {
       }
     }
 
-    const newLoanIds = validResults.map((result) => result.id);
-
-    if (newLoanIds.length === 0) {
+    if (validResults.length === 0) {
       console.log('No new eligible loans detected.');
       return;
     }
 
     console.log('Change detected!');
-    console.log('New Count of Eligible Loans', newLoanIds.length);
+    console.log('New Count of Eligible Loans', validResults.length);
 
-    newLoanIds.forEach(async (id) => {
-      const result = validResults.find((res) => res.id === id);
+    const provider = new ethers.providers.InfuraProvider('sepolia');
+    const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+    let nonce = await provider.getTransactionCount(wallet.address);
 
+    for (const result of validResults) {
       const newLoanAdvertisedObject = {
         tokenCollateralAddress: result.collateral.contract.address,
-        tokenCollateralAmount: result.collateral_amount,
+        tokenCollateralAmount:
+          result.collateral.contract.category === 1
+            ? '0'
+            : result.collateral_amount,
         tokenCollateralIndex:
           result.collateral.token_id ||
           '115792089237316195423570985008687907853269984665640564039457584007913129639935',
@@ -166,13 +704,20 @@ const checkPWNAPI = async () => {
         durationOfLoanSeconds: result.desired_duration,
         chainId: result.chain_id,
         loanId: result.id,
+        tokenCollateralCategory: result.collateral.contract.category,
+        tokenCollateralId: result.collateral.token_id || 0,
+        loanYield: result.desired_loan_yield,
+        expiration: result.loan_request_expiration_timestamp,
+        borrower: result.borrower_address,
+        nonce: result.loan_request_nonce,
+        signature: result.loan_request_signature,
       };
       console.log('New Loan Advertised:', newLoanAdvertisedObject);
 
-      await advertiseNewLoan(newLoanAdvertisedObject);
-
-      processedLoanIds.add(id);
-    });
+      await advertiseNewLoan(newLoanAdvertisedObject, nonce);
+      nonce++;
+      processedLoanIds.add(result.id);
+    }
   } catch (error) {
     console.error('Error checking API:', error);
   }
