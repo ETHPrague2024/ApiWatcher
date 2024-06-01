@@ -8,7 +8,20 @@ const CHECK_INTERVAL = 60000; // 60 seconds
 
 let processedLoanIds = new Set();
 
-// Function to determine if the contract is ERC20 or ERC721
+const provider = new ethers.providers.InfuraProvider('sepolia');
+const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+
+const PWNRevokedNonceAddress = '0x472361E75d28597b0a7F86146fbB4a86f173d10D';
+const PWNRevokedNonceABI = [
+  'function isNonceRevoked(address owner, uint256 nonce) external view returns (bool)',
+];
+const revokedNonceContract = new ethers.Contract(
+  PWNRevokedNonceAddress,
+  PWNRevokedNonceABI,
+  provider
+);
+
+// Function to determine if the contract is ERC20, ERC721, or ERC1155
 const getContractStandard = async (address, provider) => {
   const contract = new ethers.Contract(
     address,
@@ -23,7 +36,7 @@ const getContractStandard = async (address, provider) => {
     const erc721InterfaceId = '0x80ac58cd';
     const supportsERC721 = await contract
       .supportsInterface(erc721InterfaceId)
-      .catch((e) => false);
+      .catch(() => false);
     if (supportsERC721) {
       return 'ERC721';
     }
@@ -31,7 +44,7 @@ const getContractStandard = async (address, provider) => {
     const erc1155InterfaceId = '0xd9b67a26';
     const supportsERC1155 = await contract
       .supportsInterface(erc1155InterfaceId)
-      .catch((e) => false);
+      .catch(() => false);
     if (supportsERC1155) {
       return 'ERC1155';
     }
@@ -46,9 +59,6 @@ const getContractStandard = async (address, provider) => {
 };
 
 const advertiseNewLoan = async (loan) => {
-  const provider = new ethers.providers.InfuraProvider('sepolia');
-
-  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
   const contract = new ethers.Contract(
     '0x981Ff5aC5402b7fA1099Cd6bad653B40D8c949C9', // SEPOLIA, THIS ONE IS TEST
     [
@@ -629,6 +639,16 @@ const checkPWNAPI = async () => {
     const validResults = [];
 
     for (const result of newResults) {
+      const isRevoked = await revokedNonceContract.isNonceRevoked(
+        result.borrower_address,
+        result.loan_request_nonce
+      );
+      if (isRevoked) {
+        console.log(`Loan ID: ${result.id} is already revoked.`);
+        processedLoanIds.add(result.id);
+        continue;
+      }
+
       const collateralContract = result.collateral.contract.address;
       const desiredAssetContract = result.desired_asset.contract.address;
 
@@ -681,8 +701,6 @@ const checkPWNAPI = async () => {
     console.log('Change detected!');
     console.log('New Count of Eligible Loans', validResults.length);
 
-    const provider = new ethers.providers.InfuraProvider('sepolia');
-    const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
     let nonce = await provider.getTransactionCount(wallet.address);
 
     for (const result of validResults) {
